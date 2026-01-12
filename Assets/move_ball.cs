@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class move_ball : MonoBehaviour
 {
@@ -8,19 +9,40 @@ public class move_ball : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        Debug.Log("Game Started");
     }
 
     void FixedUpdate()
     {
-        float x = 0f;
-        float z = 0f;
+        if (Keyboard.current == null)
+            return;
 
-        if (Input.GetKey(KeyCode.W)) z = 1;
-        if (Input.GetKey(KeyCode.S)) z = -1;
-        if (Input.GetKey(KeyCode.A)) x = -1;
-        if (Input.GetKey(KeyCode.D)) x = 1;
+        Vector3 move = Vector3.zero;
 
-        Vector3 move = new Vector3(x, 0, z) * speed;
-        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+        if (Keyboard.current.yKey.isPressed)
+        {
+            move += transform.forward;
+            Debug.Log("Moving Forward");
+        }
+        if (Keyboard.current.hKey.isPressed)
+        {
+            move -= transform.forward;
+            Debug.Log("Moving Backward");
+        }
+        if (Keyboard.current.gKey.isPressed)
+        {
+            move -= transform.right;
+            Debug.Log("Moving Left");
+        }
+        if (Keyboard.current.jKey.isPressed)
+        {
+            move += transform.right;
+            Debug.Log("Moving Right");
+        }
+
+        if (move != Vector3.zero)
+        {
+            rb.MovePosition(transform.position + move.normalized * speed * Time.fixedDeltaTime);
+        }
     }
 }
